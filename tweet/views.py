@@ -1,7 +1,8 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from .models import Tweet, Like, Retweet
-from user.models import Activity
+from user.models import Activity, User
 from .serializers import TweetSerializer
 from rest_framework import permissions, filters
 from rest_framework.authentication import TokenAuthentication
@@ -13,12 +14,18 @@ class TweetIsAuthenticated(permissions.IsAuthenticated):
 
 
 class TweetViewSet(ModelViewSet):
-    queryset = Tweet.objects.all().order_by('-created')
     serializer_class = TweetSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [TweetIsAuthenticated]
     filter_backends = [filters.SearchFilter]
     search_fields = ['hashtags__tag', 'text', 'user__username']
+
+    def get_queryset(self):
+        user_id = self.request.query_params.get('user__id', None)
+        if user_id is not None:
+            user = get_object_or_404(User, pk=user_id)
+            return Tweet.objects.filter(user=user).order_by('-created')
+        return Tweet.objects.all().order_by('-created')
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
