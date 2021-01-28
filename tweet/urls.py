@@ -22,8 +22,14 @@ tweet_like = TweetViewSet.as_view(
      }
 )
 
+tweet_retweet = TweetViewSet.as_view(
+    {'post': 'retweet',
+     }
+)
+
 urlpatterns = [
     path('', tweet_list),
     path('<int:pk>/', tweet_detail),
     path('<int:pk>/like', tweet_like),
+    path('<int:pk>/retweet', tweet_retweet),
 ]

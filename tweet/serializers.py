@@ -7,6 +7,7 @@ from .models import Tweet, Like, Retweet
 
 class TweetSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField()
+    retweets = serializers.SerializerMethodField()
     hasLiked = serializers.SerializerMethodField()
     hasRetweeted = serializers.SerializerMethodField()
     user = serializers.SerializerMethodField()
@@ -26,6 +27,7 @@ class TweetSerializer(serializers.ModelSerializer):
             'parent',
             'replies',
             'replies2',
+            'retweets',
 
         ]
 
@@ -52,6 +54,15 @@ class TweetSerializer(serializers.ModelSerializer):
             'users': [UserSerializer(instance=like.user, exclude_fields=(
             'token', 'email', 'first_name', 'last_name', 'followers', 'followees')).data for like in
                       instance.like_set.all()]
+        }
+
+
+    def get_retweets(self, instance):
+        return {
+            'count': instance.retweet_set.all().count(),
+            'users': [UserSerializer(instance=retweet.user, exclude_fields=(
+            'token', 'email', 'first_name', 'last_name', 'followers', 'followees')).data for retweet in
+                      instance.retweet_set.all()]
         }
 
     def get_hasLiked(self, instance):
