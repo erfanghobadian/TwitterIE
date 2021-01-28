@@ -45,7 +45,7 @@ class TweetViewSet(ModelViewSet):
                 text='User {} Liked Tweet {}'.format(request.user.username, tweet.text[:20])
             )
         return Response(
-            "Tweet Liked Successfully",
+            TweetSerializer(instance=tweet, context={'request': self.request}).data,
             status=200
         )
 
