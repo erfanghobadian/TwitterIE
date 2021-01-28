@@ -4,7 +4,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    pass
+    avatar = models.ImageField(null=True, default='default_avatar.png')
 
 
 class Follow(BaseModel):
@@ -19,3 +19,10 @@ class Follow(BaseModel):
         related_name='followers'
     )
 
+
+class Activity(BaseModel):
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE
+    )
+    text = models.TextField()
